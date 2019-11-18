@@ -348,21 +348,13 @@ Swagger is a popular API development tool which can help you to build and test A
 
 ### ApiController 
 
+POST /api/init
+
 POST /api/touchin
 
-    : request
-    req
-    
-    : response
-    res
-  
 POST /api/touchout
 
-    : request
-    req
-    
-    : response
-    res
+POST /api/refund
   
    
 ---
