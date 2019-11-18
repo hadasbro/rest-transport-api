@@ -91,21 +91,21 @@ public class PassengerService {
      */
     public void checkPassengerLimits(Passenger passenger) throws ApiException {
 
-        if (passenger.getCard().getValidityDate().isAfter(LocalDateTime.now())) {
-            throw new ApiException(ApiException.CODES.LIMIT_DAY);
+        if (passenger.getCard().getValidityDate().isBefore(LocalDateTime.now())) {
+            throw new ApiException(ApiException.CODES.CARD_VALIDITY_DATE);
         }
 
     }
 
     /**
-     * passengerHasMoney
+     * passengerHasMinimumRequiredFunds
      *
      * @param passenger -
-     * @param amount -
      * @return boolean
      */
-    public boolean passengerHasMoney(Passenger passenger, Double amount) {
-            return true;
+    public boolean passengerHasMinimumRequiredFunds(Passenger passenger) {
+        // TODO
+        return true;
     }
 
 }

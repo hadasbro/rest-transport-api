@@ -208,7 +208,9 @@ public class TransportService {
      */
     public void checkJourneyRestrictions(Journey journey) throws ApiException {
 
-        if (!journey.getDateStart().isBefore(LocalDateTime.now())) {
+        // TODO
+
+        if (!journey.getDateStart().isBefore(LocalDateTime.now().minusDays(3L))) {
             throw new ApiException(ApiException.CODES.JOURNEY_NOACTIVE);
         }
 
@@ -249,7 +251,7 @@ public class TransportService {
      */
     public void checkJourneyLimits(Journey journey, Passenger passenger) throws ApiException {
         if(1==12)
-            throw new ApiException(ApiException.CODES.JOURNEY_TIMER);
+            throw new ApiException(ApiException.CODES.JOURNEY_EXPIRED_FINISHED);
     }
 
     /**
@@ -310,10 +312,9 @@ public class TransportService {
      * createJourney
      *
      * @param journey -
-     * @return Journey
      */
-    public Journey createJourney(Journey journey) {
-        return journeyRepository.save(journey);
+    public void createJourney(Journey journey) {
+        journeyRepository.save(journey);
     }
 
 }

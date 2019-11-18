@@ -30,6 +30,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,8 +70,6 @@ class ApiController extends BaseController {
 
     @Autowired
     private CityRepository cityRepository;
-
-
 
     /*
     ################################################################################
@@ -253,10 +252,6 @@ class ApiController extends BaseController {
 
             CODES[] dontCheck = new CODES[]{JOURNEYL_NOT_FOUND};
 
-            int amountCents = 0; //request.getAmount() / ApiRequestDto.CENTS;
-
-            Double amount = Math.abs(Double.valueOf(amountCents));
-
             // validate operator, journey and passenger
             MutableTriple<Operator, Journey, Passenger> gsp = processComponent.checkOperatorJourneyPassenger(request);
 
@@ -265,9 +260,12 @@ class ApiController extends BaseController {
             Passenger passenger = gsp.right;
 
             // check if passenger has enough money
-            if(!passengerService.passengerHasMoney(passenger, amount)){
+            if(!passengerService.passengerHasMinimumRequiredFunds(passenger)){
                 throw new ApiException(INSUFFICIENT_FUNDS);
             }
+
+            // check point exist
+            Point point = processComponent.checkPoint(request.getPointId());
 
             // validate journeyleg
             Journeyleg journeyleg = processComponent.checkJourneylegAndAction(request, dontCheck);
@@ -276,7 +274,7 @@ class ApiController extends BaseController {
             if(journeyleg == null) {
 
                 journeyleg = new Journeyleg();
-//                journeyleg.ad(journey);
+                journeyleg.setJourney(journey);
                 journeyleg.setIdentifer(request.getJourneylegIdentifer());
                 journeyleg.setPassenger(passenger);
                 journeyleg.setOperator(operator);
@@ -287,16 +285,14 @@ class ApiController extends BaseController {
             Action action = new Action();
             action.setIdentifier(request.getActionIdentifier());
             action.setType(TYPE.TOUCH_IN);
-//            action.se(amount);
+            action.setPoint(point);
+            action.setCostAmont(BigDecimal.valueOf(0));
 
             // add journeyleg + action dependencies
             journeyleg.addAction(action);
-//            action.setJourneyleg(journeyleg);
-
 
             // handle
             processComponent.handleAction(passenger, action, journeyleg, journey);
-
 
             return ResponseEntity.ok(new ApiResponseDto(passenger));
 
@@ -339,16 +335,15 @@ class ApiController extends BaseController {
 
             CODES[] dontCheck = new CODES[0];
 
-            int amountCents = 0;//request.getAmount() / ApiRequestDto.CENTS;
-
-            Double amount = Math.abs(Double.valueOf(amountCents));
-
             // validate operator, journey and passenger
             MutableTriple<Operator, Journey, Passenger> gsp = processComponent.checkOperatorJourneyPassenger(request);
 
             Operator operator = gsp.left;
             Journey journey = gsp.middle;
             Passenger passenger = gsp.right;
+
+            // check point exist
+            Point point = processComponent.checkPoint(request.getPointId());
 
             // validate journeyleg
             Journeyleg journeyleg = processComponent.checkJourneylegAndAction(request, dontCheck);
@@ -361,11 +356,13 @@ class ApiController extends BaseController {
             Action action = new Action();
             action.setIdentifier(request.getActionIdentifier());
             action.setType(TYPE.TOUCH_OUT);
-//            action.setAmount(amount);
+            action.setPoint(point);
+
+            // TODO - calculate cost
+            action.setCostAmont(BigDecimal.valueOf(0));
 
             // add journeyleg + action dependencies
             journeyleg.addAction(action);
-//            action.setJourneyleg(journeyleg);
 
             // handle
             processComponent.handleAction(passenger, action, journeyleg, journey);
@@ -411,9 +408,8 @@ class ApiController extends BaseController {
 
             CODES[] dontCheck = new CODES[0];
 
-            int amountCents = 0; //request.getAmount() / ApiRequestDto.CENTS;
-
-            Double amount = Math.abs(Double.valueOf(amountCents));
+            // check point exist
+            Point point = processComponent.checkPoint(request.getPointId());
 
             Journeyleg journeyleg = transportService.getJourneylegByActions(request.getActionIdentifier(), TYPE.TOUCH_IN);
 
@@ -428,12 +424,11 @@ class ApiController extends BaseController {
 
             Action action = new Action();
             action.setIdentifier(request.getActionIdentifier());
-            action.setType(TYPE.INIT_JOURNEY);
-//            action.setAmount(amount);
+            action.setType(TYPE.REFUND);
+            action.setPoint(point);
 
-//            if(!actionTouchIn.getAmount().equals(action.getAmount())) {
-//                throw new ApiException(AMOUNT_DOESNT_MATCH);
-//            }
+            // TODO check cost
+            action.setCostAmont(actionTouchIn.getCostAmont());
 
             Passenger passenger = journeyleg.getPassenger();
 

@@ -55,15 +55,16 @@ public class ActionHandler {
         spInsert.registerStoredProcedureParameter("action", String.class, ParameterMode.IN);
         spInsert.registerStoredProcedureParameter("error", String.class, ParameterMode.OUT);
         spInsert.registerStoredProcedureParameter("status", Integer.class, ParameterMode.OUT);
-        spInsert.registerStoredProcedureParameter("inrBalance", Double.class, ParameterMode.INOUT);
+        spInsert.registerStoredProcedureParameter("inbalance", Double.class, ParameterMode.INOUT);
 
         /*
         values
+        TODO - calc amount
         */
         spInsert.setParameter("passenger_id", passenger.getId());
-        spInsert.setParameter("amount", 0); //action.getAmount()
+        spInsert.setParameter("amount", action.getCostAmont());
         spInsert.setParameter("action", action.getType().name().toLowerCase());
-        spInsert.setParameter("inrBalance", passenger.getBalance());
+        spInsert.setParameter("inbalance", passenger.getBalance());
         spInsert.setFlushMode(FlushModeType.AUTO);
 
         /*
@@ -74,7 +75,7 @@ public class ActionHandler {
         /*
         get values
         */
-        BigDecimal realMoney = (BigDecimal) spInsert.getOutputParameterValue("inrBalance");
+        BigDecimal balance = (BigDecimal) spInsert.getOutputParameterValue("inbalance");
         Integer status = (Integer) spInsert.getOutputParameterValue("status");
         String error = (String) spInsert.getOutputParameterValue("error");
 
@@ -90,7 +91,7 @@ public class ActionHandler {
             throw new ApiException(ApiException.CODES.GENERAL, new Exception(error));
         }
 
-        passenger.setBalance(realMoney); //new BigDecimal(realMoney)
+        passenger.setBalance(balance); //new BigDecimal(balance)
 
     }
 

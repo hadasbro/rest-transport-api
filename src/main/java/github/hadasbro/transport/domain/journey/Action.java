@@ -5,6 +5,7 @@ import github.hadasbro.transport.domain.location.Point;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,7 +21,7 @@ public class Action implements EntityTag {
     private Long id;
 
     public enum TYPE{
-        TOUCH_IN, TOUCH_OUT, INIT_JOURNEY
+        TOUCH_IN, TOUCH_OUT, INIT_JOURNEY, REFUND
     }
 
     @Enumerated(EnumType.STRING)
@@ -29,6 +30,8 @@ public class Action implements EntityTag {
     private String identifier;
 
     private LocalDateTime date;
+
+    private BigDecimal costAmont = BigDecimal.valueOf(0);
 
     @ManyToOne(
             fetch = FetchType.EAGER
