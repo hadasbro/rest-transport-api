@@ -1,0 +1,18 @@
+mysql-docker:
+  container_name: mysql_docker
+  image: mysql:5.7
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=api
+    - MYSQL_USER=sla
+    - MYSQL_PASSWORD=sla
+  ports:
+  - 3306:3306
+
+api-docker:
+  container_name: api
+  image: slawekhaa/api
+  links:
+    - mysql-docker:mysql
+  ports:
+    - 8080:8080
