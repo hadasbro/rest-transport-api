@@ -75,7 +75,7 @@ See `src/main/resources/db/migration/V1.0__init.sql`
 
 ## Docs & examples
     
-##### Swagger documentation & "try it out"
+### Swagger documentation & "try it out"
 
 See API Documentation on Swagger [HOST/swagger-ui.html#/](http://localhost/swagger-ui.html#/)
 
@@ -87,7 +87,7 @@ Swagger is a popular API development tool which can help you to build and test A
 ![picture](files/swagger.png)
 
 
-##### UtilsController
+### UtilsController
 
 > Load fake data via controller (only on profiles "dev" and "docker")
 
@@ -126,17 +126,7 @@ Swagger is a popular API development tool which can help you to build and test A
                     "ownerSlug": "owner-slug-11",
                     "typeName": "private"
                 },
-                {
-                    "id": 93,
-                    "name": "Operator #17",
-                    "owner": 57,
-                    "operatorCode": "operator-errorCode-17",
-                    "licenceId": 5017,
-                    "type": 2,
-                    "status": 1,
-                    "ownerSlug": "owner-slug-1",
-                    "typeName": "mixed"
-                }
+                ...
             ]
         }
 
@@ -175,20 +165,8 @@ Swagger is a popular API development tool which can help you to build and test A
                     "ownerSlug": "owner-slug-3",
                     "typeName": "mixed"
                 }
-            ],
-            "owner-slug-14": [
-                {
-                    "id": 101,
-                    "name": "Operator #10",
-                    "owner": 55,
-                    "operatorCode": "operator-errorCode-10",
-                    "licenceId": 5010,
-                    "type": 2,
-                    "status": 3,
-                    "ownerSlug": "owner-slug-14",
-                    "typeName": "mixed"
-                }
             ]
+            ...
         }
     }
 
@@ -226,20 +204,8 @@ Swagger is a popular API development tool which can help you to build and test A
                     "ownerSlug": "owner-slug-17",
                     "typeName": "private"
                 }
-            ],
-            "national": [
-                {
-                    "id": 103,
-                    "name": "Operator #3",
-                    "owner": 8,
-                    "operatorCode": "operator-errorCode-3",
-                    "licenceId": 5003,
-                    "type": 3,
-                    "status": 1,
-                    "ownerSlug": "owner-slug-15",
-                    "typeName": "national"
-                }
             ]
+            ...
         }
     }
 
@@ -284,20 +250,8 @@ Swagger is a popular API development tool which can help you to build and test A
                         "ownerSlug": "owner-slug-3",
                         "typeName": "national"
                     }
-                ],
-                "owner-slug-6": [
-                    {
-                        "id": 86,
-                        "name": "Operator #0",
-                        "owner": 4,
-                        "operatorCode": "operator-errorCode-0",
-                        "licenceId": 5000,
-                        "type": 3,
-                        "status": 1,
-                        "ownerSlug": "owner-slug-6",
-                        "typeName": "national"
-                    }
                 ]
+                ...
             }
         }
     }
@@ -392,7 +346,7 @@ Swagger is a popular API development tool which can help you to build and test A
     DELETE /operator/delete/104
     OPTIONS /operator/options
 
-##### ApiController 
+### ApiController 
 
 POST /api/touchin
 
@@ -415,7 +369,7 @@ POST /api/touchout
 
 ## Acknowledgments
 
-#### Frameworks & Libs 
+### Frameworks & Libs 
 
 + Spring (https://spring.io/projects/spring-boot)
 
@@ -435,7 +389,7 @@ POST /api/touchout
 
 + Lombok (https://projectlombok.org/)
 
-#### Used concepts
+### Used concepts
 
 + Naming Strategies (Snake & CammelCase) (https://docs.jboss.org/hibernate/orm/5.3/javadocs/org/hibernate/boot/model/naming/)
 
