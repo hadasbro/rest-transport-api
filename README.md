@@ -75,7 +75,7 @@ See `src/main/resources/db/migration/V1.0__init.sql`
 
 ## Docs & examples
     
-### Swagger documentation & "try it out"
+#### Swagger documentation & "try it out"
 
 See API Documentation on Swagger [HOST/swagger-ui.html#/](http://localhost/swagger-ui.html#/)
 
@@ -87,7 +87,7 @@ Swagger is a popular API development tool which can help you to build and test A
 ![picture](files/swagger.png)
 
 
-### UtilsController
+#### UtilsController
 
 > Load fake data via controller (only on profiles "dev" and "docker")
 
@@ -102,7 +102,7 @@ Swagger is a popular API development tool which can help you to build and test A
         }
 
 
-##### OperatorController    
+#### OperatorController    
 > Get all Operators
 
     # Request
@@ -346,7 +346,7 @@ Swagger is a popular API development tool which can help you to build and test A
     DELETE /operator/delete/104
     OPTIONS /operator/options
 
-### ApiController 
+#### ApiController 
 
 POST /api/init
 
@@ -361,7 +361,7 @@ POST /api/refund
 
 ## Acknowledgments
 
-### Frameworks & Libs 
+#### Frameworks & Libs 
 
 + Spring (https://spring.io/projects/spring-boot)
 
@@ -381,7 +381,7 @@ POST /api/refund
 
 + Lombok (https://projectlombok.org/)
 
-### Used concepts
+#### Used concepts
 
 + Naming Strategies (Snake & CammelCase) (https://docs.jboss.org/hibernate/orm/5.3/javadocs/org/hibernate/boot/model/naming/)
 
