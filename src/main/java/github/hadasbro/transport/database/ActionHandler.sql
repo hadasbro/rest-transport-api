@@ -16,70 +16,65 @@ BEGIN
 
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION, SQLSTATE '42S22'
 	BEGIN
-		 GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, @errno = MYSQL_ERRNO, @error_text = MESSAGE_TEXT;
-		 SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @error_text);
-		 SET error = @full_error;
-		  ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, @errno = MYSQL_ERRNO, @error_text = MESSAGE_TEXT;
+        SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @error_text);
+        SET error = @full_error;
+        ROLLBACK;
 	END;
-
-   SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
-   START TRANSACTION;
 
 ActionHandler:BEGIN
 
-DECLARE `var_passenger_id` BIGINT;
-DECLARE `var_real_money` DECIMAL(20,2);
-DECLARE `var_real_change` DECIMAL(20,2) DEFAULT 0;
-
-INSERT INTO `wallet`.`test` (`msg`) VALUES ('a');
-
-SELECT
-`id`, `realMoney`
-INTO
-`var_passenger_id`, `var_real_money`
-FROM
-`wallet`.`passenger`
-WHERE
-id = `passenger_id`
-LIMIT 1;
+    DECLARE `var_passenger_id` BIGINT;
+    DECLARE `var_balance` DECIMAL(20,2);
+    DECLARE `var_balance_change` DECIMAL(20,2) DEFAULT 0;
 
 
-IF `var_passenger_id` IS NULL THEN
-SET `status` = 2;
-SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'passenger not found';
-END IF;
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    START TRANSACTION;
+
+        SELECT
+            `id`, `balance`
+        INTO
+            `var_passenger_id`, `var_balance`
+        FROM
+            `underground_api`.`passenger`
+        WHERE
+            id = `passenger_id`
+        LIMIT 1
+        FOR UPDATE;
+
+        IF `var_passenger_id` IS NULL THEN
+            SET `status` = 2;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Passenger not found';
+        END IF;
 
 
-IF `amount` > (`var_real_money`) THEN
-SET `status` = 3;
-SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient funds';
-END IF;
+        IF `amount` > (`var_balance`) AND `action` != 'refund' THEN
+            SET `status` = 3;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient funds';
+        END IF;
 
 
-IF `action` = 'refund' OR `action` = 'touchout' THEN
-SET `var_real_change` = ABS(`amount`);
-ELSE
-IF `amount` <= (`var_real_money`) THEN
-SET `var_real_change` = -1 * ABS(`amount`);
-ELSE
-SET `var_real_change` = -1 * `var_real_money`;
-END IF;
-END IF;
+        IF `action` = 'refund' THEN
+            SET `var_balance_change` = ABS(`amount`);
+        ELSE
+            SET `var_balance_change` = -1 * ABS(`amount`);
+        END IF;
 
-SET inbalance = var_real_money + `var_real_change`;
+        SET `inbalance` = `var_balance` + `var_balance_change`;
 
-UPDATE
-`wallet`.`passenger`
-SET
-`realMoney` = inbalance
-WHERE `id` = `var_passenger_id`;
+        UPDATE
+            `underground_api`.`passenger`
+        SET
+            `balance` = `inbalance`
+        WHERE
+            `id` = `var_passenger_id`;
 
-SET error = '';
-SET status = 0;
+        SET error = '';
+        SET status = 0;
 
-COMMIT;
+    COMMIT;
 
 END;
 END //
-
 DELIMITER ;
