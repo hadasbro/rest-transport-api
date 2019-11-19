@@ -84,6 +84,9 @@ Swagger is a popular API development tool which can help you to build and test A
 
 ![picture](files/swagger.png)
 
+---
+
+## REST API Controllers
 
 #### UtilsController
 
@@ -117,12 +120,7 @@ Swagger is a popular API development tool which can help you to build and test A
                     "id": 92,
                     "name": "Operator #12",
                     "owner": 36,
-                    "operatorCode": "operator-errorCode-12",
-                    "licenceId": 5012,
-                    "type": 1,
-                    "status": 1,
-                    "ownerSlug": "owner-slug-11",
-                    "typeName": "private"
+                    ...
                 },
                 ...
             ]
@@ -145,23 +143,7 @@ Swagger is a popular API development tool which can help you to build and test A
                     "id": 109,
                     "name": "Operator #5",
                     "owner": 34,
-                    "operatorCode": "operator-errorCode-5",
-                    "licenceId": 5005,
-                    "type": 1,
-                    "status": 3,
-                    "ownerSlug": "owner-slug-3",
-                    "typeName": "private"
-                },
-                {
-                    "id": 111,
-                    "name": "Operator #11",
-                    "owner": 34,
-                    "operatorCode": "operator-errorCode-11",
-                    "licenceId": 5011,
-                    "type": 2,
-                    "status": 3,
-                    "ownerSlug": "owner-slug-3",
-                    "typeName": "mixed"
+                    ...
                 }
             ]
             ...
@@ -184,23 +166,7 @@ Swagger is a popular API development tool which can help you to build and test A
                     "id": 109,
                     "name": "Operator #5",
                     "owner": 34,
-                    "operatorCode": "operator-errorCode-5",
-                    "licenceId": 5005,
-                    "type": 1,
-                    "status": 3,
-                    "ownerSlug": "owner-slug-3",
-                    "typeName": "private"
-                },
-                {
-                    "id": 99,
-                    "name": "Operator #8",
-                    "owner": 26,
-                    "operatorCode": "operator-errorCode-8",
-                    "licenceId": 5008,
-                    "type": 1,
-                    "status": 1,
-                    "ownerSlug": "owner-slug-17",
-                    "typeName": "private"
+                    ...
                 }
             ]
             ...
@@ -226,27 +192,7 @@ Swagger is a popular API development tool which can help you to build and test A
                         "id": 87,
                         "name": "Operator #11",
                         "owner": 40,
-                        "operatorCode": "operator-errorCode-11",
-                        "licenceId": 5011,
-                        "type": 3,
-                        "status": 3,
-                        "ownerSlug": "owner-slug-3",
-                        "typeName": "national"
-                    }
-                ]
-            },
-            "Overground": {
-                "owner-slug-3": [
-                    {
-                        "id": 87,
-                        "name": "Operator #11",
-                        "owner": 40,
-                        "operatorCode": "operator-errorCode-11",
-                        "licenceId": 5011,
-                        "type": 3,
-                        "status": 3,
-                        "ownerSlug": "owner-slug-3",
-                        "typeName": "national"
+                        ...
                     }
                 ]
                 ...
@@ -272,12 +218,7 @@ Swagger is a popular API development tool which can help you to build and test A
                 91
             ],
             "national": [
-                112,
-                97,
-                95
-            ],
-            "mixed": [
-                98
+                112
             ]
         }
     }
@@ -299,12 +240,7 @@ Swagger is a popular API development tool which can help you to build and test A
                 "id": 306,
                 "name": "Operator Ad 1",
                 "owner": 6,
-                "operatorCode": "operator-ad-1",
-                "licenceId": 5019,
-                "type": 1,
-                "status": 0,
-                "ownerSlug": "owner-slug-16",
-                "typeName": "private"
+                ...
             }
         ]
     }
@@ -325,12 +261,7 @@ Swagger is a popular API development tool which can help you to build and test A
                 "id": 306,
                 "name": "Operator Ad 1ab",
                 "owner": 6,
-                "operatorCode": "operator-changed-1",
-                "licenceId": 5019,
-                "type": 1,
-                "status": 0,
-                "ownerSlug": "owner-slug-16",
-                "typeName": "private"
+                ...
             }
         ]
     }
@@ -372,7 +303,13 @@ Response ERROR*
 
 POST /api/init
 
-    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1"}
+    {
+        "journeyIdentifer":"journey-identif-1",
+        "licenceId":5004,
+        "passengerId":"106",
+        "pointId":16,
+        "actionIdentifier":"action-identif-1"
+    }
 
 
 POST /api/balance
@@ -381,17 +318,18 @@ POST /api/balance
 
 
 POST /api/touchin
-    
-    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1", "journeylegIdentifer":"journey-identif-1"}
-    
 POST /api/touchout
-    
-    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1", "journeylegIdentifer":"journey-identif-1"}
-    
 POST /api/refund
-    
-    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1", "journeylegIdentifer":"journey-identif-1"}
-   
+
+    {
+        "journeyIdentifer":"journey-identif-1",
+        "licenceId":5004,
+        "passengerId":"106",
+        "pointId":16,
+        "actionIdentifier":"action-identif-1",
+        "journeylegIdentifer":"journey-identif-1"
+    }
+
 ---
 
 ## Acknowledgments
