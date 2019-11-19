@@ -128,7 +128,6 @@ public class ApiRequestDto implements DtoObject, EntityTag, Serializable, Loggab
      * type
      */
     @NotNull(
-            groups = {ApiValidators.ApiInitGroup.class},
             message = "type {e.not_null}"
     )
     @Range(
@@ -140,12 +139,7 @@ public class ApiRequestDto implements DtoObject, EntityTag, Serializable, Loggab
 
     @NotNull(
             groups = {ApiValidators.ApiInitGroup.class, ApiValidators.ApiActionGroup.class},
-            message = "type {e.not_null}"
-    )
-    @Range(
-            groups = {ApiValidators.ApiInitGroup.class, ApiValidators.ApiActionGroup.class},
-            min=1, max=3,
-            message = "type {label.form.range_min_max}"
+            message = "pointId {e.not_null}"
     )
     private Long pointId;
 

@@ -30,8 +30,6 @@ See `src/main/resources/db/migration/V1.0__init.sql`
 
 ##### Api Communication flow
 
-##### Models relations
-
 
 ## Run on Docker
 
@@ -348,14 +346,51 @@ Swagger is a popular API development tool which can help you to build and test A
 
 #### ApiController 
 
+**API Responses**
+
+Response OK*
+
+    {
+        "passengerId": 106,
+        "balance": 300,
+        "message": "",
+        "status": "OK",
+        "errorCode": ""
+    }
+    
+Response ERROR*
+    
+    {
+        "passengerId": 0,
+        "balance": 0,
+        "message": "licenceId should not be empty",
+        "status": "ERROR",
+        "errorCode": "GENERAL"
+    }
+    
+**API Requests**
+
 POST /api/init
 
+    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1"}
+
+
+POST /api/balance
+
+    {"licenceId":5004,"passengerId":"106"}
+
+
 POST /api/touchin
-
+    
+    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1", "journeylegIdentifer":"journey-identif-1"}
+    
 POST /api/touchout
-
+    
+    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1", "journeylegIdentifer":"journey-identif-1"}
+    
 POST /api/refund
-  
+    
+    {"journeyIdentifer":"journey-identif-1","licenceId":5004,"passengerId":"106","pointId":16,"actionIdentifier":"action-identif-1", "journeylegIdentifer":"journey-identif-1"}
    
 ---
 

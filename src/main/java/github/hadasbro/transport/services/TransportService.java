@@ -299,7 +299,9 @@ public class TransportService {
      *
      * @param action -
      */
-    public void addAction(Action action){}
+    public void addAction(Action action){
+        actionRepository.save(action);
+    }
 
     /**
      * refreshJourneyDataWebsocket

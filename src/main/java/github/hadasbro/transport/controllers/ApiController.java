@@ -136,8 +136,10 @@ class ApiController extends BaseController {
             // check point exist
             Point point = processComponent.checkPoint(request.getPointId());
 
+            CODES[] dontCheck = new CODES[0];
+
             // validate operator and passenger
-            MutablePair<Operator, Passenger> gsp = processComponent.checkOperatorPassenger(request);
+            MutablePair<Operator, Passenger> gsp = processComponent.checkOperatorPassenger(request, dontCheck);
 
             Operator operator = gsp.left;
             Passenger passenger = gsp.right;
@@ -157,7 +159,7 @@ class ApiController extends BaseController {
                         Journey newJourney = new Journey();
                         newJourney.setOperator(operator);
                         newJourney.setPassenger(passenger);
-                        newJourney.setIdentifer(request.getJourneylegIdentifer());
+                        newJourney.setIdentifer(request.getJourneyIdentifer());
                         transportService.createJourney(newJourney);
                     }, executor
             );
@@ -201,8 +203,15 @@ class ApiController extends BaseController {
 
             parseValidationErrors(result);
 
+            CODES[] dontCheck = new CODES[]{
+                    OPER_RESTRICTED,
+                    PASSENGER_NOACTIVE,
+                    PASSENGER_BLOCKED,
+                    CITY_NOT_OPERATOR
+            };
+
             // validate operator and passenger
-            MutablePair<Operator, Passenger> gsp = processComponent.checkOperatorPassenger(request);
+            MutablePair<Operator, Passenger> gsp = processComponent.checkOperatorPassenger(request, dontCheck);
 
             Operator operator = gsp.left;
             Passenger passenger = gsp.right;

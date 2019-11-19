@@ -189,14 +189,14 @@ public class ProcessComponent {
                                 })
                         )
 
-                                .handle((res, ex) -> {
+                        .handle((res, ex) -> {
 
-                                    if (ex != null && ex.getCause() instanceof ApiException) {
-                                        return (ApiException) ex.getCause();
-                                    }
-                                    return null;
+                            if (ex != null && ex.getCause() instanceof ApiException) {
+                                return (ApiException) ex.getCause();
+                            }
+                            return null;
 
-                                })
+                        })
                 );
 
 
@@ -219,9 +219,9 @@ public class ProcessComponent {
     /**
      * checkPoint
      *
-     * @param pointId
-     * @return
-     * @throws ApiException
+     * @param pointId -
+     * @return Point -
+     * @throws ApiException -
      */
     public Point checkPoint(Long pointId) throws ApiException {
         return transportService
@@ -236,7 +236,7 @@ public class ProcessComponent {
      * @return -
      * @throws ApiException -
      */
-    public MutablePair<Operator, Passenger> checkOperatorPassenger(ApiRequestDto request) throws ApiException {
+    public MutablePair<Operator, Passenger> checkOperatorPassenger(ApiRequestDto request, ApiException.CODES[] dontCheck) throws ApiException {
 
         //Operators
 
@@ -262,6 +262,10 @@ public class ProcessComponent {
                                 operator -> {
 
                                     try {
+
+                                        if(Utils.arrayInclude(dontCheck, ApiException.CODES.OPER_RESTRICTED)) {
+                                            return operator;
+                                        }
 
                                         operatorService.checkOperatorRestrictions(operator);
 
@@ -301,6 +305,12 @@ public class ProcessComponent {
 
                             try {
 
+                                if(
+                                        Utils.arrayInclude(dontCheck, ApiException.CODES.PASSENGER_NOACTIVE)
+                                        && Utils.arrayInclude(dontCheck, ApiException.CODES.PASSENGER_BLOCKED)
+                                ) {
+                                    return passenger;
+                                }
                                 passengerService.checkPassengerRestrictions(passenger);
                                 passengerService.checkPassengerLimits(passenger);
 
@@ -354,6 +364,9 @@ public class ProcessComponent {
 
                             try {
                                 //load passenger balance for operator
+                                if(Utils.arrayInclude(dontCheck, ApiException.CODES.CITY_NOT_OPERATOR)) {
+                                    return null;
+                                }
                                 operatorService.checkPassengerCanUseOperatorsLine(operator, passenger);
                             } catch (ApiException t) {
                                 return t;
