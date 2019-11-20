@@ -146,26 +146,15 @@ class ApiController extends BaseController {
             Operator operator = gsp.left;
             Passenger passenger = gsp.right;
 
-            CompletableFuture.runAsync(
-                    () -> {
-                        Action action = new Action();
-                        action.setType(TYPE.INIT_JOURNEY);
-                        action.setIdentifier(request.getActionIdentifier());
-                        action.setPoint(point);
-                        transportService.addAction(action);
-                    }, executor
-            );
+            Journey journey = Journey.from(passenger, operator, request);
 
-            CompletableFuture.runAsync(
-                    () -> {
-                        Journey newJourney = new Journey();
-                        newJourney.setOperator(operator);
-                        newJourney.setPassenger(passenger);
-                        newJourney.setIdentifer(request.getJourneyIdentifer());
-                        transportService.createJourney(newJourney);
-                    }, executor
-            );
+            Action action = Action.from(TYPE.INIT_JOURNEY, request, point, null);
 
+            if (transportService.getJourneyByIdentifer(journey.getIdentifer()).isPresent()){
+                throw new ApiException(ACTION_DUPLICATED);
+            }
+
+            processComponent.handleInitAction(passenger, action, journey);
 
             return ResponseEntity.ok(new ApiResponseDto(passenger));
 
@@ -209,7 +198,7 @@ class ApiController extends BaseController {
                     OPER_RESTRICTED,
                     PASSENGER_NOACTIVE,
                     PASSENGER_BLOCKED,
-                    PASSENGER_OPERATOR
+                    PASSENGER_LINE
             };
 
             // validate operator and passenger

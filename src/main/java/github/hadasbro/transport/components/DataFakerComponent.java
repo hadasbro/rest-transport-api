@@ -349,7 +349,7 @@ public class DataFakerComponent {
                     passenger.setCity(city);
 
                     Accesscard ps = new Accesscard();
-                    ps.setValidityDate(LocalDateTime.now());
+                    ps.setValidityDate(LocalDateTime.of(2030,2,3,12,0));
                     ps.setActivationDate(LocalDateTime.now());
                     ps.setAcId(i);
 
@@ -369,7 +369,7 @@ public class DataFakerComponent {
      */
     private List<Journey> generateJourneys(List<Operator> operators, List<Passenger> passengers) {
 
-        return transportService.addJourney(
+        return transportService.addJourneys(
                 CollectionUtils.objGenerateSet(50, i -> {
 
                     Operator randOperator = CollectionUtils.getRandomElement(operators, i);

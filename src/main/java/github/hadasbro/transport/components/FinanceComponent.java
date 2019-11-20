@@ -36,7 +36,7 @@ public class FinanceComponent {
      *
      * @return BigDecimal
      */
-    public BigDecimal getMinimunJourneyCost() {
+    private BigDecimal getMinimunJourneyCost() {
         return minimunJourneyCost;
     }
 

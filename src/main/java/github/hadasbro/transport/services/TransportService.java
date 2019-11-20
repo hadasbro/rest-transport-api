@@ -127,13 +127,23 @@ public class TransportService {
     }
 
     /**
-     * addJourney
+     * addJourneys
      *
      * @param journeys -
      * @return List<Journey> -
      */
-    public List<Journey> addJourney(Set<Journey> journeys){
+    public List<Journey> addJourneys(Set<Journey> journeys){
         return journeyRepository.saveAll(journeys);
+    }
+
+    /**
+     * addJourney
+     *
+     * @param journey -
+     * @return Journey -
+     */
+    public Journey addJourney(Journey journey){
+        return journeyRepository.save(journey);
     }
 
     /**

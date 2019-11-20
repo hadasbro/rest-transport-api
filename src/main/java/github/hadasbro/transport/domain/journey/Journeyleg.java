@@ -22,7 +22,10 @@ public class Journeyleg implements EntityTag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(unique = true)
     private String identifer;
+
     private boolean closed;
     private LocalDateTime firstAction;
     private LocalDateTime lastAction;

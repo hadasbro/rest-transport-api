@@ -22,6 +22,7 @@ public class Country implements EntityTag {
 
     private String name;
 
+    @Column(unique = true)
     private String isoCode;
 
     @OneToMany(

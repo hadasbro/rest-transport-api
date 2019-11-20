@@ -13,11 +13,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "passenger_action")
-@SuppressWarnings({"unused"})
+@Table(
+        name = "passenger_action",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"identifier", "type"})}
+        )
 @ToString(exclude = {"point","journeyleg"})
 @EqualsAndHashCode(exclude = {"point", "journeyleg"})
 @NoArgsConstructor @AllArgsConstructor @Getter @Setter
+@SuppressWarnings({"unused"})
 public class Action implements EntityTag {
 
     @Id

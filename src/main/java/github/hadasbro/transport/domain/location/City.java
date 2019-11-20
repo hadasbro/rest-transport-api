@@ -23,6 +23,7 @@ public class City implements EntityTag {
 
     private String name;
 
+    @Column(unique = true)
     private String cityCode;
 
     @JsonManagedReference

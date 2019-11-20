@@ -41,6 +41,7 @@ public class Operator implements EntityTag {
     )
     private Owner owner;
 
+    @Column(unique = true)
     private String operatorCode;
 
     private int licenceId;

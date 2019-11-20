@@ -307,7 +307,7 @@ POST /api/init
         "journeyIdentifer":"journey-identif-1",
         "licenceId":5004,
         "passengerId":"106",
-        "pointId":16,
+        "pointId":4,
         "actionIdentifier":"action-identif-1"
     }
 
@@ -324,14 +324,14 @@ POST /api/touchout
 POST /api/refund
 
 *(action Refund must have  exactly the same data as TOUCHIN request, especially actionIdentifier and journeylegIdentifer)*
-
+        
     {
         "journeyIdentifer":"journey-identif-1",
         "licenceId":5004,
         "passengerId":"106",
-        "pointId":16,
-        "actionIdentifier":"action-identif-1",
-        "journeylegIdentifer":"journey-identif-1"
+        "pointId":4,
+        "actionIdentifier":"action-identif-act-2",
+        "journeylegIdentifer":"journey-identif-jleg-2"
     }
 
 ---

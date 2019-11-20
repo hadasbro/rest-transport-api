@@ -4,6 +4,7 @@ import github.hadasbro.transport.domain.EntityTag;
 import github.hadasbro.transport.domain.passenger.Passenger;
 import github.hadasbro.transport.domain.transport.Operator;
 import github.hadasbro.transport.utils.Utils;
+import github.hadasbro.transport.webDto.ApiRequestDto;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -25,6 +26,7 @@ public class Journey implements EntityTag {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(unique = true)
     private String identifer;
     private LocalDateTime dateStart;
     private LocalDateTime lastAction;
@@ -77,5 +79,19 @@ public class Journey implements EntityTag {
         return nIdentifer;
     }
 
-
+    /**
+     * Static Journey factory
+     *
+     * @param passenger -
+     * @param operator -
+     * @param request -
+     * @return Journey -
+     */
+    public static Journey from(Passenger passenger, Operator operator, ApiRequestDto request){
+        Journey newJourney = new Journey();
+        newJourney.setOperator(operator);
+        newJourney.setPassenger(passenger);
+        newJourney.setIdentifer(request.getJourneyIdentifer());
+        return newJourney;
+    }
 }

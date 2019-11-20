@@ -16,7 +16,7 @@ public class ApiException extends Exception {
         JOURNEY_NOACTIVE("Journey is not active"),
         JOURNEY_OPERATOR("Journey is for different cities"),
         JOURNEY_PASSENGER("Passenger and journey is incorrect"),
-        PASSENGER_OPERATOR("City dissallowed"),
+        PASSENGER_LINE("Passenger cannot use theat line"),
         PASSENGER_NOACTIVE("Passenger not acvite"),
         PASSENGER_BLOCKED("Passenger blocked"),
         CARD_VALIDITY_DATE("Card is no longer valid"),

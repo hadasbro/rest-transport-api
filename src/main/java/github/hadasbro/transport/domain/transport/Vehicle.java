@@ -26,6 +26,7 @@ public class Vehicle implements EntityTag {
 
     private String name;
 
+    @Column(unique = true)
     private String slug;
 
     @Enumerated(EnumType.STRING)

@@ -364,7 +364,7 @@ public class ProcessComponent {
 
                             try {
                                 //load passenger balance for operator
-                                if(Utils.arrayInclude(dontCheck, ApiException.CODES.PASSENGER_OPERATOR)) {
+                                if(Utils.arrayInclude(dontCheck, ApiException.CODES.PASSENGER_LINE)) {
                                     return null;
                                 }
                                 operatorService.checkPassengerCanUseOperatorsLine(operator, passenger);
@@ -650,5 +650,14 @@ public class ProcessComponent {
         transportService.addAction(action);
 
     }
+    @org.springframework.transaction.annotation.Transactional(value = "transactionManager", rollbackFor = ApiException.class)
+    public void handleInitAction(Passenger passenger, Action action, Journey journey) throws ApiException {
 
+        this.entityManager.merge(passenger);
+
+        transportService.addJourney(journey);
+
+        transportService.addAction(action);
+
+    }
 }
