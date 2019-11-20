@@ -318,8 +318,11 @@ POST /api/balance
 
 
 POST /api/touchin
+
 POST /api/touchout
+
 POST /api/refund
+(action Refund must have  exactly the same data as TOUCHIN request, especially actionIdentifier and journeylegIdentifer)
 
     {
         "journeyIdentifer":"journey-identif-1",
