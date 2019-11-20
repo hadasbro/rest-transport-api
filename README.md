@@ -130,150 +130,147 @@ Swagger is a popular API development tool which can help you to build and test A
 > Get all Operators groupped by Owner or Type
 
     # Request
-    GET|POST /operator/all-grouped?groupBy=owner
+        GET|POST /operator/all-grouped?groupBy=owner
     
     # Response
-    {
-        "code": "OK",
-        "errors": null,
-        "warnings": null,
-        "result": {
-            "owner-slug-3": [
-                {
-                    "id": 109,
-                    "name": "Operator #5",
-                    "owner": 34,
-                    ...
-                }
-            ]
-            ...
-        }
-    }
-
-> Get all Operators groupped by Type
-
-    # Request
-    GET|POST /operator/all-grouped?groupBy=typename
-
-    # Response
-    {
-        "code": "OK",
-        "errors": null,
-        "warnings": null,
-        "result": {
-            "private": [
-                {
-                    "id": 109,
-                    "name": "Operator #5",
-                    "owner": 34,
-                    ...
-                }
-            ]
-            ...
-        }
-    }
-
-
-> Get all operators matching required types and owners, groupped by type and owner
-
-    # Request
-    POST /operator/by-vehicle-owner
-    {"vehicleTypes":["train","underground","dlr","overground"],"ownerSlugs":["owner-slug-6","owner-slug-3"]}}
-    
-    # Response
-    {
-        "code": "OK",
-        "errors": null,
-        "warnings": null,
-        "result": {
-            "Underground": {
+        {
+            "code": "OK",
+            "errors": null,
+            "warnings": null,
+            "result": {
                 "owner-slug-3": [
                     {
-                        "id": 87,
-                        "name": "Operator #11",
-                        "owner": 40,
+                        "id": 109,
+                        "name": "Operator #5",
+                        "owner": 34,
                         ...
                     }
                 ]
                 ...
             }
         }
-    }
+
+> Get all Operators groupped by Type
+
+    # Request
+        GET|POST /operator/all-grouped?groupBy=typename
+
+    # Response
+        {
+            "code": "OK",
+            "errors": null,
+            "warnings": null,
+            "result": {
+                "private": [
+                    {
+                        "id": 109,
+                        "name": "Operator #5",
+                        "owner": 34,
+                        ...
+                    }
+                ]
+                ...
+            }
+        }
+
+
+> Get all operators matching required types and owners, groupped by type and owner
+
+    # Request
+        POST /operator/by-vehicle-owner
+        {"vehicleTypes":["train","underground","dlr","overground"],"ownerSlugs":["owner-slug-6","owner-slug-3"]}}
+    
+    # Response
+        {
+            "code": "OK",
+            "errors": null,
+            "warnings": null,
+            "result": {
+                "Underground": {
+                    "owner-slug-3": [
+                        {
+                            "id": 87,
+                            "name": "Operator #11",
+                            "owner": 40,
+                            ...
+                        }
+                    ]
+                    ...
+                }
+            }
+        }
 
 
 
 > Get list of operator IDs by type
 
     # Request
-    GET /operator/id-by-type
+        GET /operator/id-by-type
     
     # Response
-    {
-        "code": "OK",
-        "errors": null,
-        "warnings": null,
-        "result": {
-            "private": [
-                104,
-                91
-            ],
-            "national": [
-                112
-            ]
+        {
+            "code": "OK",
+            "errors": null,
+            "warnings": null,
+            "result": {
+                "private": [
+                    104,
+                    91
+                ]
+            }
         }
-    }
 
 
 > Add/update operator
 
     # Request
-    PUT /operator/add
-    {"name":"Operator Ad 1","owner":6,"operatorCode":"operator-ad-1","licenceId":5019,"status":1,"ownerSlug":"owner-slug-15","type":1}
+        PUT /operator/add
+        {"name":"Operator Ad 1","owner":6,"operatorCode":"operator-ad-1","licenceId":5019,"status":1,"ownerSlug":"owner-slug-15","type":1}
     
     # Response
-    {
-        "code": "OK",
-        "errors": null,
-        "warnings": null,
-        "result": [
-            {
-                "id": 306,
-                "name": "Operator Ad 1",
-                "owner": 6,
-                ...
-            }
-        ]
-    }
+        {
+            "code": "OK",
+            "errors": null,
+            "warnings": null,
+            "result": [
+                {
+                    "id": 306,
+                    "name": "Operator Ad 1",
+                    "owner": 6,
+                    ...
+                }
+            ]
+        }
 
 > Update / patch
     
     # Request
-    PATCH /operator/update/306
-    {"name":"Operator Ad 1ab","owner":6,"operatorCode":"operator-changed-1","licenceId":5019,"status":1,"ownerSlug":"owner-slug-15","type":1}
+        PATCH /operator/update/306
+        {"name":"Operator Ad 1ab","owner":6,"operatorCode":"operator-changed-1","licenceId":5019,"status":1,"ownerSlug":"owner-slug-15","type":1}
     
     # Response
-    {
-        "code": "OK",
-        "errors": null,
-        "warnings": null,
-        "result": [
-            {
-                "id": 306,
-                "name": "Operator Ad 1ab",
-                "owner": 6,
-                ...
-            }
-        ]
-    }
+        {
+            "code": "OK",
+            "errors": null,
+            "warnings": null,
+            "result": [
+                {
+                    "id": 306,
+                    "name": "Operator Ad 1ab",
+                    "owner": 6,
+                    ...
+                }
+            ]
+        }
 
 
 > Other services
 
     # Requests
-    GET /operator/get/104
-    HEAD /operator/get/104
-    DELETE /operator/delete/104
-    OPTIONS /operator/options
+        GET /operator/get/104
+        HEAD /operator/get/104
+        DELETE /operator/delete/104
+        OPTIONS /operator/options
 
 #### ApiController 
 
@@ -301,7 +298,7 @@ Response ERROR*
     
 **API Requests**
 
-POST /api/init
+POST */api/init*
 
     {
         "journeyIdentifer":"journey-identif-1",
@@ -312,16 +309,16 @@ POST /api/init
     }
 
 
-POST /api/balance
+POST */api/balance*
 
     {"licenceId":5004,"passengerId":"106"}
 
 
-POST /api/touchin
+POST */api/touchin*
 
-POST /api/touchout
+POST */api/touchout*
 
-POST /api/refund
+POST */api/refund*
 
 *(action Refund must have  exactly the same data as TOUCHIN request, especially actionIdentifier and journeylegIdentifer)*
         
