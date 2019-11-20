@@ -382,6 +382,8 @@ POST /api/refund
 
 + Spring Validators (https://docs.spring.io/spring/docs/3.0.0.RC3/reference/html/ch05s07.html)
 
++ @Transactional in Spring (https://www.baeldung.com/transaction-configuration-with-jpa-and-spring)
+
 + Content Negotiation in Spring (https://spring.io/blog/2013/05/11/content-negotiation-using-spring-mvc)
 
 ---

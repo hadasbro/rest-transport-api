@@ -3,6 +3,7 @@ package github.hadasbro.transport.domain.journey;
 import github.hadasbro.transport.domain.EntityTag;
 import github.hadasbro.transport.domain.passenger.Passenger;
 import github.hadasbro.transport.domain.transport.Operator;
+import github.hadasbro.transport.webDto.ApiRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,21 +30,21 @@ public class Journeyleg implements EntityTag {
     /**
      * Operator
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "operator_id", nullable = false)
     private Operator operator;
 
     /**
      * Passenger
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "passenger_id", nullable = false)
     private Passenger passenger;
 
     /**
      * Journey
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "journey_id", nullable = false)
     private Journey journey;
 
@@ -78,4 +79,21 @@ public class Journeyleg implements EntityTag {
         this.actions.add(action);
     }
 
+    /**
+     * Journeyleg static factory
+     *
+     * @param journey -
+     * @param passenger -
+     * @param operator -
+     * @param request -
+     * @return Journeyleg
+     */
+    public static Journeyleg from(Journey journey, Passenger passenger, Operator operator, ApiRequestDto request) {
+        Journeyleg journeyleg = new Journeyleg();
+        journeyleg.setJourney(journey);
+        journeyleg.setIdentifer(request.getJourneylegIdentifer());
+        journeyleg.setPassenger(passenger);
+        journeyleg.setOperator(operator);
+        return journeyleg;
+    }
 }

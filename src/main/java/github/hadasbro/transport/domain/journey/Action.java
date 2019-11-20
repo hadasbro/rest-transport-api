@@ -1,7 +1,11 @@
 package github.hadasbro.transport.domain.journey;
 
+import github.hadasbro.transport.components.FinanceComponent;
+import github.hadasbro.transport.components.SpringContext;
 import github.hadasbro.transport.domain.EntityTag;
 import github.hadasbro.transport.domain.location.Point;
+import github.hadasbro.transport.exceptions.ApiException;
+import github.hadasbro.transport.webDto.ApiRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -53,4 +57,27 @@ public class Action implements EntityTag {
         date = LocalDateTime.now();
     }
 
+    /**
+     * Static Actions factory
+     *
+     * @param type -
+     * @param request -
+     * @param point -
+     * @param journeyleg -
+     * @return Action
+     * @throws ApiException -
+     */
+    public static Action from(TYPE type, ApiRequestDto request, Point point, Journeyleg journeyleg) throws ApiException {
+
+        FinanceComponent fc = SpringContext.getBean(FinanceComponent.class);
+
+        Action action = new Action();
+        action.setIdentifier(request.getActionIdentifier());
+        action.setType(type);
+        action.setPoint(point);
+        action.setCostAmont(fc.calculcateJourneyCost(action, journeyleg));
+        action.setJourneyleg(journeyleg);
+
+        return action;
+    }
 }

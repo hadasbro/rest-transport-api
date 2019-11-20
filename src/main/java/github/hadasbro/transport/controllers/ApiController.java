@@ -1,6 +1,7 @@
 package github.hadasbro.transport.controllers;
 
 import github.hadasbro.transport.aspects.Logger;
+import github.hadasbro.transport.components.FinanceComponent;
 import github.hadasbro.transport.components.ProcessComponent;
 import github.hadasbro.transport.domain.journey.Action;
 import github.hadasbro.transport.domain.journey.Action.TYPE;
@@ -30,18 +31,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static github.hadasbro.transport.exceptions.ApiException.CODES;
 import static github.hadasbro.transport.exceptions.ApiException.CODES.*;
-import static github.hadasbro.transport.utils.CollectionUtils.getFirstFromCollection;
 import static github.hadasbro.transport.webDto.ApiRequestDto.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @Log
@@ -70,6 +69,9 @@ class ApiController extends BaseController {
 
     @Autowired
     private CityRepository cityRepository;
+
+    @Autowired
+    private FinanceComponent financeComponent;
 
     /*
     ################################################################################
@@ -134,7 +136,7 @@ class ApiController extends BaseController {
             parseValidationErrors(result);
 
             // check point exist
-            Point point = processComponent.checkPoint(request.getPointId());
+            Point point = processComponent.getPoint(request.getPointId());
 
             CODES[] dontCheck = new CODES[0];
 
@@ -207,7 +209,7 @@ class ApiController extends BaseController {
                     OPER_RESTRICTED,
                     PASSENGER_NOACTIVE,
                     PASSENGER_BLOCKED,
-                    CITY_NOT_OPERATOR
+                    PASSENGER_OPERATOR
             };
 
             // validate operator and passenger
@@ -273,34 +275,17 @@ class ApiController extends BaseController {
                 throw new ApiException(INSUFFICIENT_FUNDS);
             }
 
-            // check point exist
-            Point point = processComponent.checkPoint(request.getPointId());
-
             // validate journeyleg
-            Journeyleg journeyleg = processComponent.checkJourneylegAndAction(request, dontCheck);
+            processComponent.checkJourneylegAndAction(request, dontCheck);
+
+            // check point exist & get from DB
+            Point point = processComponent.getPoint(request.getPointId());
 
             // first touchin in the journeyleg, create new journeyleg
-            if(journeyleg == null) {
+            Journeyleg journeyleg = Journeyleg.from(journey, passenger, operator, request);
 
-                journeyleg = new Journeyleg();
-                journeyleg.setJourney(journey);
-                journeyleg.setIdentifer(request.getJourneylegIdentifer());
-                journeyleg.setPassenger(passenger);
-                journeyleg.setOperator(operator);
-                journeyleg.setClosed(false);
+            Action action = Action.from(TYPE.TOUCH_IN, request, point, journeyleg);
 
-            }
-
-            Action action = new Action();
-            action.setIdentifier(request.getActionIdentifier());
-            action.setType(TYPE.TOUCH_IN);
-            action.setPoint(point);
-            action.setCostAmont(BigDecimal.valueOf(0));
-
-            // add journeyleg + action dependencies
-            journeyleg.addAction(action);
-
-            // handle
             processComponent.handleAction(passenger, action, journeyleg, journey);
 
             return ResponseEntity.ok(new ApiResponseDto(passenger));
@@ -351,34 +336,26 @@ class ApiController extends BaseController {
             Journey journey = gsp.middle;
             Passenger passenger = gsp.right;
 
-            // check point exist
-            Point point = processComponent.checkPoint(request.getPointId());
-
             // validate journeyleg
             Journeyleg journeyleg = processComponent.checkJourneylegAndAction(request, dontCheck);
 
-            // first touchin action in the journeyleg, create new journeyleg
+            // we always need journeyleg when touch out
             if(journeyleg == null) {
                 throw new ApiException(JOURNEYL_NOT_FOUND);
             }
 
-            Action action = new Action();
-            action.setIdentifier(request.getActionIdentifier());
-            action.setType(TYPE.TOUCH_OUT);
-            action.setPoint(point);
+            // check point exist & get from DB
+            Point point = processComponent.getPoint(request.getPointId());
 
-            // TODO - calculate cost
-            action.setCostAmont(BigDecimal.valueOf(0));
+            // create an action
+            Action action = Action.from(TYPE.TOUCH_OUT, request, point, journeyleg);
 
-            // add journeyleg + action dependencies
-            journeyleg.addAction(action);
-
-            // handle
             processComponent.handleAction(passenger, action, journeyleg, journey);
 
             return ResponseEntity.ok(new ApiResponseDto(passenger));
 
         } catch (ApiException wex) {
+            wex.printStackTrace();
             return ResponseEntity.ok(new ApiResponseDto(wex));
         } catch (Throwable t){
             log.warning(t.toString());
@@ -415,33 +392,37 @@ class ApiController extends BaseController {
 
             parseValidationErrors(result);
 
-            CODES[] dontCheck = new CODES[0];
+            CODES[] dontCheck = new CODES[]{ACTION_DUPLICATED};
 
             // check point exist
-            Point point = processComponent.checkPoint(request.getPointId());
+            Point point = processComponent.getPoint(request.getPointId());
 
-            Journeyleg journeyleg = transportService.getJourneylegByActions(request.getActionIdentifier(), TYPE.TOUCH_IN);
+            List<Action> relatedActions = transportService.getActionsAndJourneyleg(request.getActionIdentifier());
 
-            // no journeyleg to refund
-            if(journeyleg == null) {
+            // for refund we always expect duplicate (touchin request with the same data)
+            if(relatedActions.isEmpty()) {
                 throw new ApiException(JOURNEYL_NOT_FOUND);
             }
 
+            // check if refunded already
+            if (relatedActions.stream().anyMatch(a -> a.getType() == TYPE.REFUND)) {
+                throw new ApiException(ACTION_DUPLICATED);
+            }
+
+            Action relatedTouchIn = relatedActions
+                    .stream()
+                    .filter(a -> a.getType() == TYPE.TOUCH_IN)
+                    .findFirst()
+                    .orElseThrow(() -> new ApiException(JOURNEYL_NOT_FOUND));
+
+            Journeyleg journeyleg = relatedTouchIn.getJourneyleg();
+
             Journey journey = journeyleg.getJourney();
 
-            Action actionTouchIn = getFirstFromCollection(journeyleg.getActions());
+            Passenger passenger = journey.getPassenger();
 
-            Action action = new Action();
-            action.setIdentifier(request.getActionIdentifier());
-            action.setType(TYPE.REFUND);
-            action.setPoint(point);
+            Action action = Action.from(TYPE.REFUND, request, point, journeyleg);
 
-            // TODO check cost
-            action.setCostAmont(actionTouchIn.getCostAmont());
-
-            Passenger passenger = journeyleg.getPassenger();
-
-            // handle
             processComponent.handleAction(passenger, action, journeyleg, journey);
 
             return ResponseEntity.ok(new ApiResponseDto(passenger));

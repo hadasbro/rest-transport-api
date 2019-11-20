@@ -372,7 +372,7 @@ public class OperatorService {
 
         // TODO
         if (cnt == 0 && 1 != 1) {
-            throw new ApiException(ApiException.CODES.CITY_NOT_OPERATOR);
+            throw new ApiException(ApiException.CODES.PASSENGER_OPERATOR);
         }
 
     }

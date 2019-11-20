@@ -19,7 +19,7 @@ BEGIN
         GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, @errno = MYSQL_ERRNO, @error_text = MESSAGE_TEXT;
         SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @error_text);
         SET error = @full_error;
-        ROLLBACK;
+        -- ROLLBACK;
 	END;
 
 ActionHandler:BEGIN
@@ -28,9 +28,9 @@ ActionHandler:BEGIN
     DECLARE `var_balance` DECIMAL(20,2);
     DECLARE `var_balance_change` DECIMAL(20,2) DEFAULT 0;
 
-
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
-    START TRANSACTION;
+    -- Transaction handled in the code
+    -- SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- START TRANSACTION;
 
         SELECT
             `id`, `balance`
@@ -73,7 +73,7 @@ ActionHandler:BEGIN
         SET error = '';
         SET status = 0;
 
-    COMMIT;
+    -- COMMIT;
 
 END;
 END //

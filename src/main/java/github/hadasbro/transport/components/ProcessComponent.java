@@ -92,9 +92,10 @@ public class ProcessComponent {
          */
 
         List<Journeyleg> jlegActions = transportService.getJourneylegOrActions(
-                request.getJourneyIdentifer(),
+                request.getJourneylegIdentifer(),
                 request.getActionIdentifier()
         );
+
 
         CompletableFuture<ApiException> actionAndJlegIsValid = CompletableFuture
                 .supplyAsync(() -> true)
@@ -130,8 +131,7 @@ public class ProcessComponent {
                                                             .getActions()
                                                             .stream()
                                                             .anyMatch(
-                                                                    tr -> tr
-                                                                            .getIdentifier()
+                                                                    tr -> tr.getIdentifier()
                                                                             .equals(request.getActionIdentifier())
                                                             )
                                             );
@@ -177,7 +177,7 @@ public class ProcessComponent {
                                             .anyMatch(
                                                     rd -> rd.getActions()
                                                             .stream()
-                                                            .anyMatch(tr -> tr.getType() == Action.TYPE.INIT_JOURNEY)
+                                                            .anyMatch(tr -> tr.getType() == Action.TYPE.REFUND)
                                             );
 
                                     if (cancelled) {
@@ -209,7 +209,7 @@ public class ProcessComponent {
         return jlegActions
                 .stream()
                 .filter(
-                        rd -> rd.getIdentifer().equals(request.getActionIdentifier())
+                        rd -> rd.getIdentifer().equals(request.getJourneylegIdentifer())
                 )
                 .limit(1)
                 .filter(Predicate.not(Objects::isNull))
@@ -217,13 +217,13 @@ public class ProcessComponent {
     }
 
     /**
-     * checkPoint
+     * getPoint
      *
      * @param pointId -
      * @return Point -
      * @throws ApiException -
      */
-    public Point checkPoint(Long pointId) throws ApiException {
+    public Point getPoint(Long pointId) throws ApiException {
         return transportService
                 .getPointById(pointId)
                 .orElseThrow(() -> new ApiException(ApiException.CODES.POINT_DOESNT_EXIST));
@@ -364,7 +364,7 @@ public class ProcessComponent {
 
                             try {
                                 //load passenger balance for operator
-                                if(Utils.arrayInclude(dontCheck, ApiException.CODES.CITY_NOT_OPERATOR)) {
+                                if(Utils.arrayInclude(dontCheck, ApiException.CODES.PASSENGER_OPERATOR)) {
                                     return null;
                                 }
                                 operatorService.checkPassengerCanUseOperatorsLine(operator, passenger);
@@ -638,26 +638,16 @@ public class ProcessComponent {
     public void handleAction(Passenger passenger, Action action, Journeyleg journeyleg, Journey journey) throws ApiException {
 
         // run stored procedure
+
         ActionHandler actionHandler = new ActionHandler(entityManager);
+
         actionHandler.execute(passenger, action);
 
-        // refresh passenger entity
-        {
-            CompletableFuture.supplyAsync(() -> this.entityManager.merge(passenger));
-        }
+        this.entityManager.merge(passenger);
 
-        // add journeyleg
-        {
-            CompletableFuture.supplyAsync(() -> transportService.addJourneyleg(journeyleg));
-        }
+        transportService.addJourneyleg(journeyleg);
 
-        // handle other async operations
-        {
-            CompletableFuture.runAsync(
-                    () -> transportService.handleTransportAction(passenger, journey, action), executor
-            );
-
-        }
+        transportService.addAction(action);
 
     }
 

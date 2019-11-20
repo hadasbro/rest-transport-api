@@ -21,10 +21,4 @@ public class Point implements EntityTag {
 
     private String name;
 
-//    @OneToMany(
-//            mappedBy="point",
-//            fetch = FetchType.LAZY
-//    )
-//    private Set<Action> actions = new HashSet<>();
-
 }

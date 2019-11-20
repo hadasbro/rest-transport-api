@@ -118,11 +118,7 @@ public class ApiRequestDto implements DtoObject, EntityTag, Serializable, Loggab
     /**
      * closed - true/false
      */
-    @NotNull(
-            groups = {ApiValidators.ApiActionGroup.class},
-            message = "closed {e.not_null}"
-    )
-    private Boolean closed;
+    private Boolean closed = false;
 
     /**
      * type

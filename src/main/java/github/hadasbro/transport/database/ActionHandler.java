@@ -51,11 +51,11 @@ public class ActionHandler {
         params
         */
         spInsert.registerStoredProcedureParameter("passenger_id", Long.class, ParameterMode.IN);
-        spInsert.registerStoredProcedureParameter("amount", Double.class, ParameterMode.IN);
+        spInsert.registerStoredProcedureParameter("amount", BigDecimal.class, ParameterMode.IN);
         spInsert.registerStoredProcedureParameter("action", String.class, ParameterMode.IN);
         spInsert.registerStoredProcedureParameter("error", String.class, ParameterMode.OUT);
         spInsert.registerStoredProcedureParameter("status", Integer.class, ParameterMode.OUT);
-        spInsert.registerStoredProcedureParameter("inbalance", Double.class, ParameterMode.INOUT);
+        spInsert.registerStoredProcedureParameter("inbalance", BigDecimal.class, ParameterMode.INOUT);
 
         /*
         values

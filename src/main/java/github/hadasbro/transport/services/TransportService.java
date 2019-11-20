@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -71,55 +70,21 @@ public class TransportService {
     }
 
     /**
-     * getJourneylegByActions
-     * @param actionId -
+     * getActionsAndJourneyleg
+     * @param actionIdentifier -
      * @return Journeyleg
      */
-    public Journeyleg getJourneylegByActions(String actionId, Action.TYPE type) {
+    public List<Action> getActionsAndJourneyleg(String actionIdentifier) {
 
         return em.createQuery(
-                "SELECT jleg FROM Journeyleg jleg " +
+                "SELECT act FROM Journeyleg jleg " +
                         "JOIN jleg.actions act " +
-                        "WHERE act.actionId = :actionId AND act.type = :type",
-                Journeyleg.class
+                        "WHERE act.identifier = :actionIdentifier",
+                    Action.class
                 )
-                .setParameter("actionId", actionId)
-                .setParameter("type", type)
-                .getSingleResult();
+                .setParameter("actionIdentifier", actionIdentifier)
+                .getResultList();
 
-    }
-
-    /**
-     * updadeJourneyData
-     *
-     * @param journey -
-     * @param action -
-     */
-    public void updadeJourneyData(Journey journey, Action action) {
-
-        int a = 0;
-
-        switch (action.getType()) {
-
-            case TOUCH_IN:
-                a = 1;
-                break;
-
-            case TOUCH_OUT:
-                a = 2;
-                break;
-
-            case INIT_JOURNEY:
-                a = 3;
-                break;
-
-        }
-
-        if (a > 0){
-            System.out.println("a");
-        }
-
-        journeyRepository.save(journey);
     }
 
     /**
@@ -146,10 +111,9 @@ public class TransportService {
      * addJourneyleg
      *
      * @param journeyleg -
-     * @return Journeyleg -
      */
-    public Journeyleg addJourneyleg(Journeyleg journeyleg) {
-        return journeylegRepository.save(journeyleg);
+    public void addJourneyleg(Journeyleg journeyleg) {
+        journeylegRepository.save(journeyleg);
     }
 
     /**
@@ -208,9 +172,7 @@ public class TransportService {
      */
     public void checkJourneyRestrictions(Journey journey) throws ApiException {
 
-        // TODO
-
-        if (!journey.getDateStart().isBefore(LocalDateTime.now().minusDays(3L))) {
+        if (journey.getFinished()) {
             throw new ApiException(ApiException.CODES.JOURNEY_NOACTIVE);
         }
 
@@ -223,23 +185,6 @@ public class TransportService {
      */
     public Optional<Point> getPointById(Long id) {
         return pointRepository.findById(id);
-    }
-
-    /**
-     * handleTransportAction
-     *
-     * Handle some custom logic - use REDIS publish-subscribe pattern
-     * to push notiiffication to the operator if passenger changes
-     * balance from bonus to real or real to bonus
-     *
-     * @param passenger -
-     * @param journey -
-     * @param action -
-     * @return boolean
-     */
-    public void handleTransportAction(Passenger passenger, Journey journey, Action action) {
-
-
     }
 
     /**

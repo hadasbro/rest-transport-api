@@ -28,6 +28,7 @@ public class Journey implements EntityTag {
     private String identifer;
     private LocalDateTime dateStart;
     private LocalDateTime lastAction;
+    private Boolean finished = false;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "operator_id", nullable = false)
