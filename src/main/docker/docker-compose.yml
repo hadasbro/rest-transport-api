@@ -10,8 +10,8 @@ mysql-docker:
   - 3306:3306
 
 api-docker:
-  container_name: api
-  image: slawekhaa/api
+  container_name: rest-underground
+  image: slawekhaa/rest-underground
   links:
     - mysql-docker:mysql
   ports:
