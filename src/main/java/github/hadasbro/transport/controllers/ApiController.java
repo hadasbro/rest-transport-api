@@ -135,9 +135,6 @@ class ApiController extends BaseController {
             // validate input data
             parseValidationErrors(result);
 
-            // check point exist
-            Point point = processComponent.getPoint(request.getPointId());
-
             CODES[] dontCheck = new CODES[0];
 
             // validate operator and passenger
@@ -146,13 +143,16 @@ class ApiController extends BaseController {
             Operator operator = gsp.left;
             Passenger passenger = gsp.right;
 
-            Journey journey = Journey.from(passenger, operator, request);
+            // check point exist
+            Point point = processComponent.getPoint(request.getPointId());
 
-            Action action = Action.from(TYPE.INIT_JOURNEY, request, point, null);
+            Journey journey = Journey.from(passenger, operator, request);
 
             if (transportService.getJourneyByIdentifer(journey.getIdentifer()).isPresent()){
                 throw new ApiException(ACTION_DUPLICATED);
             }
+
+            Action action = Action.from(TYPE.INIT_JOURNEY, request, point, null);
 
             processComponent.handleInitAction(passenger, action, journey);
 
@@ -253,11 +253,14 @@ class ApiController extends BaseController {
             CODES[] dontCheck = new CODES[]{JOURNEYL_NOT_FOUND};
 
             // validate operator, journey and passenger
-            MutableTriple<Operator, Journey, Passenger> gsp = processComponent.checkOperatorJourneyPassenger(request);
+            MutableTriple<Operator, Journey, Passenger> gsp = processComponent.checkJourneyOperatorPassenger(request);
 
             Operator operator = gsp.left;
             Journey journey = gsp.middle;
             Passenger passenger = gsp.right;
+
+            // check point exist & get from DB
+            Point point = processComponent.getPoint(request.getPointId());
 
             // check if passenger has enough money
             if(!passengerService.passengerHasMinimumRequiredFunds(passenger)){
@@ -266,9 +269,6 @@ class ApiController extends BaseController {
 
             // validate journeyleg
             processComponent.checkJourneylegAndAction(request, dontCheck);
-
-            // check point exist & get from DB
-            Point point = processComponent.getPoint(request.getPointId());
 
             // first touchin in the journeyleg, create new journeyleg
             Journeyleg journeyleg = Journeyleg.from(journey, passenger, operator, request);
@@ -319,11 +319,14 @@ class ApiController extends BaseController {
             CODES[] dontCheck = new CODES[0];
 
             // validate operator, journey and passenger
-            MutableTriple<Operator, Journey, Passenger> gsp = processComponent.checkOperatorJourneyPassenger(request);
+            MutableTriple<Operator, Journey, Passenger> gsp = processComponent.checkJourneyOperatorPassenger(request);
 
             Operator operator = gsp.left;
             Journey journey = gsp.middle;
             Passenger passenger = gsp.right;
+
+            // check point exist & get from DB
+            Point point = processComponent.getPoint(request.getPointId());
 
             // validate journeyleg
             Journeyleg journeyleg = processComponent.checkJourneylegAndAction(request, dontCheck);
@@ -332,9 +335,6 @@ class ApiController extends BaseController {
             if(journeyleg == null) {
                 throw new ApiException(JOURNEYL_NOT_FOUND);
             }
-
-            // check point exist & get from DB
-            Point point = processComponent.getPoint(request.getPointId());
 
             // create an action
             Action action = Action.from(TYPE.TOUCH_OUT, request, point, journeyleg);
@@ -383,9 +383,6 @@ class ApiController extends BaseController {
 
             CODES[] dontCheck = new CODES[]{ACTION_DUPLICATED};
 
-            // check point exist
-            Point point = processComponent.getPoint(request.getPointId());
-
             List<Action> relatedActions = transportService.getActionsAndJourneyleg(request.getActionIdentifier());
 
             // for refund we always expect duplicate (touchin request with the same data)
@@ -403,6 +400,8 @@ class ApiController extends BaseController {
                     .filter(a -> a.getType() == TYPE.TOUCH_IN)
                     .findFirst()
                     .orElseThrow(() -> new ApiException(JOURNEYL_NOT_FOUND));
+
+            Point point = relatedTouchIn.getPoint();
 
             Journeyleg journeyleg = relatedTouchIn.getJourneyleg();
 

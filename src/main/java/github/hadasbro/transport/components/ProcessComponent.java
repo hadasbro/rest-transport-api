@@ -404,7 +404,42 @@ public class ProcessComponent {
      * @return MutableTriple<Operator, Journey, Passenger>
      * @throws ApiException -
      */
-    public MutableTriple<Operator, Journey, Passenger> checkOperatorJourneyPassenger(ApiRequestDto request) throws ApiException {
+    public MutableTriple<Operator, Journey, Passenger> checkJourneyOperatorPassenger(ApiRequestDto request) throws ApiException {
+
+        // journey
+
+        CompletableFuture<Journey> futureJourney = CompletableFuture
+
+                .supplyAsync(() -> {
+
+                    // load journey
+
+                    return transportService
+                            .getJourneyByIdentifer(request.getJourneyIdentifer())
+                            .orElseThrow(
+                                    () -> excToCompletableExc(new ApiException(ApiException.CODES.JOURNEY_NOT_FOUND))
+                            );
+
+                }, executor)
+
+                .thenApply(
+
+                        // check restrictions
+
+                        journey -> {
+
+                            try {
+                                transportService.checkJourneyRestrictions(journey);
+                            } catch (ApiException t) {
+                                throw excToCompletableExc(t);
+                            } catch (Throwable t) {
+                                throw excToCompletableExc(new ApiException(ApiException.CODES.GENERAL, t));
+                            }
+
+                            return journey;
+                        }
+                );
+
 
         //Operators
 
@@ -442,42 +477,6 @@ public class ProcessComponent {
                                     return operator;
                                 }
                         );
-
-
-        // journey
-
-        CompletableFuture<Journey> futureJourney = CompletableFuture
-
-                .supplyAsync(() -> {
-
-                    // load journey
-
-                    return transportService
-                            .getJourneyByIdentifer(request.getJourneyIdentifer())
-                            .orElseThrow(
-                                    () -> excToCompletableExc(new ApiException(ApiException.CODES.JOURNEY_NOT_FOUND))
-                            );
-
-                }, executor)
-
-                .thenApply(
-
-                        // check restrictions
-
-                        journey -> {
-
-                            try {
-                                transportService.checkJourneyRestrictions(journey);
-                            } catch (ApiException t) {
-                                throw excToCompletableExc(t);
-                            } catch (Throwable t) {
-                                throw excToCompletableExc(new ApiException(ApiException.CODES.GENERAL, t));
-                            }
-
-                            return journey;
-                        }
-                );
-
 
         // passenger
 
@@ -651,7 +650,7 @@ public class ProcessComponent {
 
     }
     @org.springframework.transaction.annotation.Transactional(value = "transactionManager", rollbackFor = ApiException.class)
-    public void handleInitAction(Passenger passenger, Action action, Journey journey) throws ApiException {
+    public void handleInitAction(Passenger passenger, Action action, Journey journey) {
 
         this.entityManager.merge(passenger);
 
