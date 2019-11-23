@@ -27,7 +27,7 @@ Module has DDL schema autoupdate settled to false and also
 See `src/main/resources/db/migration/V1.0__init.sql`
 
 ##### Api Communication flow
-![picture](files/chart-underground-api.png)
+![picture](files/chart.png)
 
 ## Run on Docker
 
